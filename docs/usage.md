@@ -166,6 +166,6 @@ CleverTapAPI.SetDebugLevel(CleverTapAPI.LogLevel.Debug);
 
 
 ### For more information,
- - [see included Starter Application](https://github.com/CleverTap/clevertap-react-native/blob/master/Starter/App.js) 
- - [see CleverTap JS interface](https://github.com/CleverTap/clevertap-react-native/blob/master/index.js)
- - [see CleverTap TS interface](https://github.com/CleverTap/clevertap-react-native/blob/master/index.d.ts)
+ - [see included Demo Application](https://github.com/CleverTap/clevertap-xamarin/tree/master/clevertap-component/sample/android/XamarinDemo/XamarinDemo) 
+ - [see CleverTap C# interface](https://github.com/CleverTap/clevertap-xamarin/blob/master/clevertap-component/sample/android/XamarinDemo/XamarinDemo/MainActivity.cs)
+ 
