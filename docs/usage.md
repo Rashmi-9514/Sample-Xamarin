@@ -3,14 +3,25 @@
 
 #### Grab a reference  
 ```javascript 
-const CleverTap = require('clevertap-react-native');
+private CleverTapAPI cleverTapAPI;
+cleverTapAPI = CleverTapAPI.GetDefaultInstance(Android.App.Application.Context);
 ```
 
 ## User Properties
 
 #### Update User Profile(Push Profile )
 ```javascript 
-CleverTap.profileSet({"Identity":11102008, "Name":"React-Test Profile","Email":"r@gmail.com","Gender":"Male","DOB":"1995-10-14", "custom":1.73});
+IDictionary<string, Java.Lang.Object> profileData = new Dictionary<string, Java.Lang.Object>();
+
+            profileData.Add("Name", "user1");    // String
+            profileData.Add("Identity", 97839492);      // String or number
+            profileData.Add("Email", "user1@gmail.com"); // Email address of the user
+            profileData.Add("Phone", "7012801820919");   // Phone (with the country code, starting with +)
+            profileData.Add("Gender", "M");             // Can be either M or F
+            profileData.Add("DOB", new Date());         // Date of Birth. Set the Date object to the appropriate value first - requires java.util
+
+
+            cleverTapAPI.PushProfile(profileData);;
 ```
 
 #### Set Multi Values For Key 
