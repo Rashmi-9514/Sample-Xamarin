@@ -1,5 +1,5 @@
 
-## Example JS Usage
+## Example C# Usage
 
 #### Grab a reference  
 ```javascript 
@@ -23,48 +23,44 @@ IDictionary<string, Java.Lang.Object> profileData = new Dictionary<string, Java.
 
             cleverTapAPI.PushProfile(profileData);;
 ```
-
-#### Set Multi Values For Key 
+#### Update User Profile(OnUserLogin Profile )
 ```javascript 
-CleverTap.profileSetMultiValuesForKey(['a', 'b', 'c'], 'letters');
-```
+IDictionary<string, Java.Lang.Object> profile = new Dictionary<string, Java.Lang.Object>();
 
-#### Remove Multi Value For Key 
-```javascript 
-CleverTap.profileRemoveMultiValueForKey('b', 'letters');
-```
+            profile.Add("Name", "user2");    // String
+            profile.Add("Identity", 321323112);      // String or number
+            profile.Add("Email", "user2@gmail.com"); // Email address of the user
+            profile.Add("Phone", "1212");   // Phone (with the country code, starting with +)
+            profile.Add("Gender", "M");               // Can be either M or F
+            profile.Add("DOB", new Date());         // Date of Birth. Set the Date object to the appropriate value first - requires java.util
 
-#### Add Multi Value For Key
-```javascript 
-CleverTap.profileAddMultiValueForKey('d', 'letters');
-```
-
-#### Create a User profile when user logs in (On User Login)
-```javascript 
-CleverTap.onUserLogin({'Name': 'React-Test', 'Identity': '11102008', 'Email': 'r@gmail.com', 'custom1': 43});
-```
-
-#### Get CleverTap Reference id
-```javascript
-CleverTap.profileGetCleverTapID((err, res) => {
-           		 console.log('CleverTapID', res, err);
-				 alert(`CleverTapID: \n ${res}`);
-        	});
-```
-
-#### Set Location to User Profile
-```javascript 
-CleverTap.setLocation(34.15, -118.20);
-```
-
+            cleverTapAPI.OnUserLogin(profile);
+```	    
 #### Record an event  
 ```javascript 
-CleverTap.recordEvent('testEvent');
+ cleverTapAPI.PushEvent("Product View Via Xamarin");
 ```
 
 #### Record Charged event
 ```javascript 
-CleverTap.recordChargedEvent({'totalValue': 20, 'category': 'books'}, [{'title': 'book1'}, {'title': 'book2'}, {'title': 'book3'}]);
+ IDictionary<string, Java.Lang.Object> chargedDetails = new Dictionary<string, Java.Lang.Object>();
+            chargedDetails.Add("Total Amount", 400);
+
+            IDictionary<string, Java.Lang.Object> item1 = new Dictionary<string, Java.Lang.Object>();
+            item1.Add("Product Name", "Harry Potter");
+            item1.Add("ProductID", "4756");
+            item1.Add("Price", 300);
+
+            IDictionary<string, Java.Lang.Object> item2 = new Dictionary<string, Java.Lang.Object>();
+            item2.Add("Product Name", "Harry Potter 2");
+            item2.Add("ProductID", "4776");
+            item2.Add("Price", 100);
+
+            List<IDictionary<string, Java.Lang.Object>> items = new List<IDictionary<string, Java.Lang.Object>>();
+            items.Add(item1);
+            items.Add(item2);
+
+            cleverTapAPI.PushChargedEvent(chargedDetails, items);
 ```
 
 
@@ -72,14 +68,31 @@ CleverTap.recordChargedEvent({'totalValue': 20, 'category': 'books'}, [{'title':
 
 #### Initialize the CleverTap App Inbox Method
 ```javascript 
-CleverTap.initializeInbox();
+cleverTapAPI.CTNotificationInboxListener = (ICTInboxListener)this;
+            cleverTapAPI.SetInboxMessageButtonListener((IInboxMessageButtonListener)this);
+            cleverTapAPI.InitializeInbox();
 ```
 
 #### Show the App Inbox
 ```javascript
-CleverTap.showInbox({'tabs':['Offers','Promotions'],'navBarTitle':'My App Inbox','navBarTitleColor':'#FF0000','navBarColor':'#FFFFFF','inboxBackgroundColor':'#AED6F1','backButtonColor':'#00FF00'
-                                ,'unselectedTabColor':'#0000FF','selectedTabColor':'#FF0000','selectedTabIndicatorColor':'#000000',
-                                'noMessageText':'No message(s)','noMessageTextColor':'#FF0000'});
+IList<string> tabs = new List<string>();
+            tabs.Add("Promotions");
+            tabs.Add("Offers");
+            tabs.Add("Others");//We support upto 2 tabs only. Additional tabs will be ignored
+
+            CTInboxStyleConfig styleConfig = new CTInboxStyleConfig();
+            styleConfig.Tabs = tabs;//Do not use this if you don't want to use tabs
+            styleConfig.TabBackgroundColor = "#FF0000";//provide Hex code in string ONLY
+            styleConfig.SelectedTabIndicatorColor = "#0000FF";
+            styleConfig.SelectedTabColor = "#000000";
+            styleConfig.UnselectedTabColor = "#FFFFFF";
+            styleConfig.BackButtonColor = "#FF0000";
+            styleConfig.NavBarTitleColor = "#FF0000";
+            styleConfig.NavBarTitle = "MY INBOX";
+            styleConfig.NavBarColor = "#FFFFFF";
+            styleConfig.InboxBackgroundColor = "#00FF00";
+
+            cleverTapAPI.ShowAppInbox(styleConfig);
  ```
 
 #### Get Total message count
@@ -90,219 +103,61 @@ CleverTap.getInboxMessageCount((err, res) => {
 			});	
 ```
 
-#### Get Total message count
-```javascript 
-CleverTap.getInboxMessageUnreadCount((err, res) => {
-				console.log('Unread Messages: ', res, err);
-				alert(`Unread Messages: \n ${res}`);
-			});	
-```
-
-#### Get All Inbox Messages
-```javascript 
-CleverTap.getAllInboxMessages((err, res) => {
-				console.log('All Inbox Messages: ', res, err);
-				alert(`All Inbox Messages: \n ${res}`);
-			 });	
-```
-
-#### Get all Inbox unread messages
-```javascript 
-CleverTap.getUnreadInboxMessages((err, res) => {
-				 console.log('Unread Inbox Messages: ', res, err);
-				 alert(`Unread Inbox Messages: \n ${res}`);
-			 });	
-```
-
-#### Get inbox Id
-```javascript 
-CleverTap.getInboxMessageForId('Message Id',(err, res) => {
-            		console.log("marking message read = "+res);
-					alert(`marking message read: \n ${res}`);
-        	});
-				
-```
-
-#### Delete message with id
-```javascript 
-CleverTap.deleteInboxMessageForId('Message Id');		
-```
-
-#### Mark a message as Read for inbox Id
-```javascript 
-CleverTap.markReadInboxMessageForId('Message Id');		
-```
-
-#### pushInbox Notification Viewed Event For Id
-```javascript 
-CleverTap.pushInboxNotificationViewedEventForId('Message Id');		
-```
-
-#### push Inbox Notification Clicked Event For Id
-```javascript 
-CleverTap.pushInboxNotificationClickedEventForId('Message Id');			
-```
-
 
 ## Push Notifications
 
 #### Creating Notification Channel
 ```javascript 
-CleverTap.createNotificationChannel("CtRNS", "Clever Tap React Native Testing", "CT React Native Testing", 1, true);			
-```
-
-#### Delete Notification Channel
-```javascript 
-CleverTap.deleteNotificationChannel("RNTesting");		
+  CleverTapAPI.CreateNotificationChannel(Android.App.Application.Context, "BRTesting", "BRTesting", "BRTesting", 5, true);			
 ```
 
 #### Creating a group notification channel
 ```javascript 
-CleverTap.createNotificationChannelGroup(String groupId, String groupName);		
+CleverTapAPI.CreateNotificationChannelGroup(Android.App.Application.Context, "YourGroupId", "Your Group Name");	
 ```
 
-#### Delete a group notification channel
-```javascript 
-CleverTap.deleteNotificationChannelGroup(String groupId);			
-```
-
-#### Registering Fcm Token
-```javascript 
-CleverTap.setPushToken("<Replace with FCM Token value>", CleverTap.FCM);
-```
- 
 ## Native Display
 
 #### Get Display Unit for Id
 ```javascript 
-CleverTap.getDisplayUnitForId('Unit Id', (err, res) => {
-             console.log('Get Display Unit for Id:', res, err);
-			 alert(`Get Display Unit for Id: ${res}`);
-```
-
-#### Get All Display Units
-```javascript 
-CleverTap.getAllDisplayUnits((err, res) => {
-             console.log('All Display Units: ', res, err);
-			 alert(`All Display Units: ${res}`);
-        });
+ cleverTapAPI.SetDisplayUnitListener((Com.Clevertap.Android.Sdk.Displayunits.IDisplayUnitListener)this);
 ```
 
 ## Product Config 
 
 #### Set Product Configuration to default
 ```javascript 
-CleverTap.setDefaultsMap({'text_color': 'red', 'msg_count': 100, 'price': 100.50, 'is_shown': true, 'json': '{"key":"val"}'});
+cleverTapAPI.SetCTProductConfigListener((Com.Clevertap.Android.Sdk.Product_config.ICTProductConfigListener)this);
 ```
 
 #### Fetching product configs
 ```javascript 
-CleverTap.fetch();
+ cleverTapAPI.ProductConfig().Fetch(0);
 ```
 
 #### Activate the most recently fetched product config
 ```javascript 
-CleverTap.activate();
+cleverTapAPI.ProductConfig().Activate();
 ```
-
-#### Fetch And Activate product config
-```javascript 
-CleverTap.fetchAndActivate();
-```
-
-#### Fetch Minimum Time Interval
-```javascript 
-CleverTap.fetchWithMinimumIntervalInSeconds(60);
-```
-
-#### Set Minimum Time Interval for Fetch 
-```javascript 
-CleverTap.setMinimumFetchIntervalInSeconds(60);
-```
-
-#### Get Boolean key
-```javascript 
-CleverTap.getProductConfigBoolean('is_shown', (err, res) => {
-		      console.log('PC is_shown val in boolean :', res, err);
-			  alert(`PC is_shown val in boolean : ${res}`);
-```
-#### Get Long
-```javascript 
-CleverTap.getNumber('msg_count', (err, res) => {
-		      console.log('PC is_shown val in number(long)  :', res, err);
-			  alert(`PC is_shown val in number(long) : ${res}`);
-		 });
-```
-#### Get Double
-```javascript 
-CleverTap.getNumber('price', (err, res) => {
-		      console.log('PC price val in number :', res, err);
-			  alert(`PC is_shown val in number(double) : ${res}`);
-		 });		
-```
-#### Get String
-```javascript 
-CleverTap.getProductConfigString('text_color', (err, res) => {
-              		console.log('PC text_color val in string :', res, err);
-					alert(`PC is_shown val in String : ${res}`);
-         	});	
-```
-#### Get String (JSON)
-```javascript 
-CleverTap.getProductConfigString('json', (err, res) => {
-		      console.log('PC json val in string :', res, err);
-			  alert(`PC json val in String : ${res}`);
-		 });	
-```
-
-#### Delete all activated, fetched and defaults configs
-```javascript 
-CleverTap.resetProductConfig();
-```
-
-#### Get last fetched timestamp in millis
-```javascript 
-CleverTap.getLastFetchTimeStampInMillis((err, res) => {
-               console.log('LastFetchTimeStampInMillis in string: ', res, err);
-			    alert(`LastFetchTimeStampInMillis in string: ${res}`);
-          });		
-```
-
 ## Feature Flag
 
 #### Get Feature Flag
 ```javascript 
-CleverTap.getFeatureFlag('is_dark_mode', false, (err, res) => {
-			      console.log('FF is_dark_mode val in boolean :', res, err);
-				  alert(`FF is_dark_mode val in boolean :{res}`);
-		     });
-```
-
-## App Personalisation
-
-#### Enable Personalization
-```javascript 
-CleverTap.enablePersonalization();
-			alert('enabled Personalization');	
-		};
-```
-
-#### Get Profile Name
-```javascript 
-CleverTap.profileGetProperty('Name', (err, res) => {
-		    console.log('CleverTap Profile Name: ', res, err);
-		 			alert(`CleverTap Profile Name:${res}`);
-        });
+cleverTapAPI.SetCTFeatureFlagsListener((ICTFeatureFlagsListener)this);
 ```
 
 ## Attributions
 
 #### Get CleverTap Attribution Identifier
 ```javascript 
-CleverTap.profileGetCleverTapAttributionIdentifier((err, res) => {
-            console.log('CleverTapAttributionIdentifier', res, err);
-			alert(`CleverTapAttributionIdentifier${res}`);
-        });
+
+cleverTapAPI = CleverTapAPI.GetDefaultInstance(Android.App.Application.Context);
+```
+## Debug Level
+
+#### Set Debug Level
+```javascript 
+CleverTapAPI.SetDebugLevel(CleverTapAPI.LogLevel.Debug);
 ```
 
 
